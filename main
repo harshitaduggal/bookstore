@@ -1,0 +1,265 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+
+typedef struct Book { 
+int id; 
+char tle[100]; 
+char author[100]; 
+f
+ loat price; 
+int quan ty; 
+struct Book *next; 
+} Book; 
+typedef struct CartItem { 
+int bookId; 
+int quan ty; 
+struct CartItem *next; 
+} CartItem; 
+typedef struct { 
+    int orderId; 
+    char username[100]; 
+    CartItem *items; 
+    int numItems; 
+    float totalAmount; 
+} Order; 
+ 
+Book *books = NULL; 
+CartItem *cart = NULL; 
+Order orders[10]; 
+int numOrders = 0; 
+ 
+void display_books(); 
+void add_to_cart(); 
+void view_cart(); 
+void delete_cart_item(); 
+void order(); 
+void book_inventory(); 
+ 
+int main() { 
+    book_inventory(); 
+    int x; 
+    do { 
+        prin ("****welcome to the ka aesque bookstore <3 ****\n"); 
+        prin ("1. Display the available books\n"); 
+        prin ("2. Add to Cart\n"); 
+        prin ("3. View the Cart\n"); 
+        prin ("4. Delete items from cart\n"); 
+        prin ("5. Place order\n"); 
+        prin ("6. Exit\n"); 
+        prin ("please enter your choice:"); 
+        scanf("%d", &x); 
+        switch(x) { 
+            case 1: 
+                display_books(); 
+                break; 
+            case 2: 
+                add_to_cart(); 
+                break; 
+            case 3: 
+                view_cart(); 
+                break; 
+            case 4: 
+                delete_cart_item(); 
+                break; 
+            case 5: 
+                order(); 
+                break; 
+            case 6: 
+                prin ("thank you for visi ng us<3\n"); 
+                exit(0); 
+            default: 
+                prin ("please enter a valid choice\n"); 
+        } 
+    } while (1); 
+    return 0; 
+} 
+ 
+void book_inventory() { 
+    Book *book1= (Book *)malloc(sizeof(Book)); 
+    book1->id=1; 
+    strcpy(book1-> tle, "To Kill a Mockingbird"); 
+    strcpy(book1->author, "Harper Lee"); 
+    book1->price= 1099; 
+    book1->quan ty= 50; 
+    book1->next= NULL; 
+ 
+    Book *book2= (Book *)malloc(sizeof(Book)); 
+    book2->id= 2; 
+    strcpy(book2-> tle, "1984"); 
+    strcpy(book2->author, "George Orwell"); 
+    book2->price= 540; 
+    book2->quan ty= 30; 
+    book1->next= book2; 
+    book2->next= NULL; 
+ 
+    Book *book3= (Book *)malloc(sizeof(Book)); 
+    book3->id= 3; 
+    strcpy(book3-> tle, "Pride and Prejudice"); 
+    strcpy(book3->author, "Jane Austen"); 
+    book3->price= 450; 
+    book3->quan ty= 40; 
+    book2->next= book3; 
+    book3->next= NULL; 
+     
+     
+    Book *book4= (Book *)malloc(sizeof(Book)); 
+    book4->id= 4; 
+    strcpy(book4-> tle, "crime and punishment"); 
+    strcpy(book4->author, "fyodor dosteovsky"); 
+    book4->price= 600; 
+    book4->quan ty= 45; 
+    book3->next= book4; 
+    book4->next= NULL; 
+     
+    Book *book5= (Book *)malloc(sizeof(Book)); 
+    book5->id= 5; 
+    strcpy(book5-> tle, "circe"); 
+    strcpy(book5->author, "Madelline Miller"); 
+    book5->price= 890; 
+    book5->quan ty= 35; 
+    book4->next=book5; 
+    book5->next= NULL; 
+     
+    Book *book6 = (Book *)malloc(sizeof(Book)); 
+    book6->id = 6; 
+    strcpy(book6-> tle, "norwegian woods"); 
+    strcpy(book6->author, "Haruki Murakami"); 
+    book6->price= 350; 
+    book6->quan ty= 20; 
+    book5->next=book6; 
+    book6->next= NULL; 
+     
+    books= book1; 
+} 
+ 
+void display_books() { 
+    Book *currentBook= books; 
+    prin ("ID   Title   Author   Price   Quan ty\n  "); 
+    while (currentBook!= NULL) { 
+        prin ("\n%d   %s   %s   %f   %d\n", currentBook->id, currentBook-> tle, currentBook
+>author, currentBook->price, currentBook->quan ty); 
+        currentBook= currentBook->next; 
+    } 
+} 
+ 
+void add_to_cart() { 
+    int bookId, quan ty; 
+    prin ("Enter the book ID:"); 
+    scanf("%d", &bookId); 
+    prin ("Enter the quan ty:"); 
+    scanf("%d", &quan ty); 
+ 
+    Book *currentBook= books; 
+    if (currentBook->id== bookId) { 
+            if (quan ty<= 0 || quan ty>currentBook->quan ty) { 
+                prin ("pls enter a valid quan ty.\n"); 
+                return; 
+            } 
+        } 
+        currentBook= currentBook->next; 
+  
+ 
+    CartItem *newItem= (CartItem *)malloc(sizeof(CartItem)); 
+    newItem->bookId= bookId; 
+    newItem->quan ty= quan ty; 
+    newItem->next= cart; 
+    cart= newItem; 
+    prin ("Item successfully added to the cart.\n"); 
+} 
+ 
+void view_cart() { 
+    if (cart== NULL) { 
+        prin ("oops,your shopping cart is empty.\n"); 
+        return; 
+    } 
+    prin ("Book\tQuan ty\n"); 
+    CartItem *currentItem= cart; 
+    while (currentItem!= NULL) { 
+        Book *currentBook= books; 
+         
+            if (currentBook->id== currentItem->bookId) { 
+                prin ("%s\t%d\n", currentBook-> tle, currentItem->quan ty); 
+                break; 
+            currentBook= currentBook->next; 
+        } 
+        currentItem= currentItem->next; 
+    } 
+} 
+ 
+void delete_cart_item() { 
+    if (cart== NULL) { 
+        prin ("oops,your shopping cart is empty.\n"); 
+        return;} 
+    int index; 
+    prin ("Enter index of the book: "); 
+    scanf("%d", &index); 
+    if (index < 1) { 
+        prin ("pls enter a valid index!.\n"); 
+        return; 
+    } 
+ 
+    CartItem *currentItem= cart; 
+    CartItem *prevItem= NULL; 
+    int i= 1; 
+    while (currentItem!= NULL) { 
+        if (i== index) { 
+            if (prevItem!= NULL) { 
+                prevItem->next= currentItem->next; 
+            } else { 
+                cart= currentItem->next; 
+            } 
+            free(currentItem); 
+            prin ("book has been successfully deleted from the cart.\n"); 
+            return; 
+        } 
+        prevItem= currentItem; 
+        currentItem= currentItem->next; 
+        i++; 
+    } 
+    prin ("th index id invalid!\n"); 
+} 
+ 
+void order() { 
+    if (cart== NULL) { 
+        prin ("oops,your shopping cart is empty!\n"); 
+        return; 
+    } 
+ 
+    float totalAmount = 0; 
+    prin ("\n=== Bill ===\n"); 
+    prin ("Item   Price   Quan ty    Total \n  "); 
+ 
+    CartItem *currentItem= cart; 
+    while (currentItem!= NULL) { 
+        Book *currentBook= books; 
+            if (currentBook->id== currentItem->bookId) { 
+                float itemTotal= currentBook->price * currentItem->quan ty; 
+                totalAmount+= itemTotal; 
+                prin ("%s   %f   %d    %f\n", currentBook-> tle, currentBook->price, currentItem
+>quan ty, itemTotal); 
+                break; 
+            } 
+            currentBook= currentBook->next; 
+         
+        currentItem= currentItem->next; 
+    } 
+    prin ("\nTotal amount: %f\n", totalAmount); 
+    currentItem= cart; 
+    while (currentItem!= NULL) { 
+        Book *currentBook= books; 
+            if (currentBook->id== currentItem->bookId) { 
+                currentBook->quan ty-= currentItem->quan ty; 
+                break; 
+            } 
+            currentBook= currentBook->next; 
+         
+        CartItem *t= currentItem; 
+        currentItem= currentItem->next; 
+        free(t); 
+    } 
+    cart= NULL; 
+    prin ("Order placed successfully.\n"); 
+    prin ("thank you for visi ng us <3"); 
+} 
+ 
